@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Westchester Noise Map</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+        integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <aside id="panel">
+    <header>
+      <h1>Westchester Noise Map</h1>
+      <p class="lede">Transportation noise around any address in Westchester County, from the US&nbsp;DOT National Transportation Noise Map (2022/2023 release).</p>
+    </header>
+
+    <form id="search" autocomplete="off" role="search">
+      <label for="address" class="visually-hidden">Address</label>
+      <input id="address" type="search" placeholder="Enter an address, e.g. 148 Martine Ave, White Plains"
+             aria-autocomplete="list" aria-controls="suggestions" aria-expanded="false">
+      <button type="submit">Search</button>
+      <ul id="suggestions" role="listbox" hidden></ul>
+    </form>
+    <p id="status" role="status" aria-live="polite"></p>
+
+    <section id="result" hidden>
+      <div id="result-address" class="result-address"></div>
+
+      <div class="headline">
+        <div class="headline-label">At the house <span class="hint">(24-hour average, <span id="result-year"></span>)</span></div>
+        <div class="headline-row">
+          <span id="headline-swatch" class="swatch swatch-lg"></span>
+          <div>
+            <div id="headline-db" class="headline-db"></div>
+            <div id="headline-feel" class="headline-feel"></div>
+          </div>
+        </div>
+        <div id="lot-range" class="lot-range"></div>
+      </div>
+
+      <h2>By source</h2>
+      <table class="sources">
+        <thead><tr><th>Source</th><th>At house</th><th>Loudest within 500&nbsp;m</th></tr></thead>
+        <tbody id="source-rows"></tbody>
+      </table>
+
+      <h2>Around the house</h2>
+      <p class="hint">Share of the area at each noise level.</p>
+      <div id="rings"></div>
+
+      <p class="caveat">This is a screening view, not a measurement. BTS built the model for national trend-tracking and says it should not be used to judge noise at a specific location. It ignores walls and terrain, so shielded spots may read louder than they are.</p>
+
+      <p class="hint drag-hint">Marker in the wrong spot? Drag it onto the house. Click anywhere on the map to check that spot.</p>
+    </section>
+
+    <section class="controls">
+      <h2>Map layers</h2>
+      <div class="control-row">
+        <span class="control-label">Data year</span>
+        <div class="segmented" id="year-toggle" role="radiogroup" aria-label="Data year">
+          <button type="button" data-year="2022" aria-pressed="true">2022/23</button>
+          <button type="button" data-year="2020" aria-pressed="false">2020</button>
+        </div>
+      </div>
+      <div class="control-row">
+        <span class="control-label">Noise from</span>
+        <div class="segmented" id="source-toggle" role="radiogroup" aria-label="Noise source">
+          <button type="button" data-source="all" aria-pressed="true">All</button>
+          <button type="button" data-source="road" aria-pressed="false">Road</button>
+          <button type="button" data-source="rail" aria-pressed="false">Rail</button>
+          <button type="button" data-source="aviation" aria-pressed="false">Aviation</button>
+        </div>
+      </div>
+      <div class="control-row">
+        <label class="control-label" for="opacity">Opacity</label>
+        <input id="opacity" type="range" min="0" max="100" value="60">
+      </div>
+      <div class="control-row">
+        <span class="control-label">Base map</span>
+        <div class="segmented" id="basemap-toggle" role="radiogroup" aria-label="Base map">
+          <button type="button" data-basemap="streets" aria-pressed="true">Streets</button>
+          <button type="button" data-basemap="aerial" aria-pressed="false">Aerial</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="legend">
+      <h2>Noise level (dBA, 24-hour average)</h2>
+      <ul id="legend"></ul>
+    </section>
+
+    <footer class="notes">
+      <p>Levels are modeled 24-hour equivalent A-weighted sound levels (LAeq, dBA), not measurements. Each grid cell is about 30&nbsp;m across. The model covers road, rail and airport traffic only (no helicopters, construction or other sources). It does not account for noise barriers or terrain, so shielded areas may be overestimated. Anything under 45&nbsp;dB is left blank.</p>
+      <p>The 2022/23 release models 2022 aviation and rail traffic and 2023 road traffic. Switch to 2020 to compare.</p>
+      <p>Data: <a href="https://www.bts.gov/geospatial/national-transportation-noise-map" target="_blank" rel="noopener">BTS National Transportation Noise Map</a> · addresses and parcels: <a href="https://giswww.westchestergov.com/" target="_blank" rel="noopener">Westchester County GIS</a>.</p>
+    </footer>
+  </aside>
+
+  <main id="map" aria-label="Noise map"></main>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+          integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+  <script src="app.js"></script>
+</body>
+</html>
